@@ -201,6 +201,11 @@ body {
     font-size: 2rem;
     cursor: pointer;
     color: #FF9F6E;
+    transition: transform 0.2s;
+}
+
+.close-modal:hover {
+    transform: scale(1.1);
 }
 
 .form-group {
@@ -222,12 +227,14 @@ body {
     border-radius: 12px;
     color: #eef5ff;
     font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
     border-color: #FF6B6B;
+    background: rgba(10, 10, 26, 0.95);
 }
 
 .btn-submit {
@@ -242,6 +249,12 @@ body {
     align-items: center;
     justify-content: center;
     gap: 10px;
+    transition: all 0.3s;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
 }
 
 /* Benefits Section */
@@ -277,12 +290,12 @@ body {
     flex: 1;
     min-width: 240px;
     border: 1px solid rgba(255, 255, 255, 0.15);
-    transition: transform 0.2s;
+    transition: transform 0.2s, border-color 0.2s;
 }
 
 .card:hover {
     transform: translateY(-6px);
-    border-color: #FF6B6B80;
+    border-color: rgba(255, 107, 107, 0.5);
 }
 
 .card i {
@@ -294,6 +307,11 @@ body {
 .card h3 {
     font-size: 1.6rem;
     margin-bottom: 0.8rem;
+}
+
+.card p {
+    color: #cfdcff;
+    line-height: 1.5;
 }
 
 /* Games Section */
@@ -324,6 +342,12 @@ body {
     padding: 1.8rem;
     backdrop-filter: blur(4px);
     border: 1px solid rgba(255,255,240,0.1);
+    transition: transform 0.3s;
+}
+
+.game-row:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 107, 107, 0.3);
 }
 
 .game-slider {
@@ -347,7 +371,7 @@ body {
     display: flex;
     width: 100%;
     height: 100%;
-    animation: slideSlow 16s infinite ease-in-out;
+    transition: transform 0.5s ease-in-out;
 }
 
 .slide-images img {
@@ -358,17 +382,38 @@ body {
     border-radius: 20px;
 }
 
-@keyframes slideSlow {
-    0% { transform: translateX(0%); }
-    25% { transform: translateX(0%); }
-    33% { transform: translateX(-100%); }
-    58% { transform: translateX(-100%); }
-    66% { transform: translateX(-200%); }
-    91% { transform: translateX(-200%); }
-    100% { transform: translateX(0%); }
+/* Botões de navegação do slider */
+.slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    padding: 12px 16px;
+    cursor: pointer;
+    border-radius: 50%;
+    z-index: 10;
+    transition: all 0.3s;
+    font-size: 1.2rem;
+    backdrop-filter: blur(4px);
 }
 
-.slider-dots {
+.slider-btn:hover {
+    background: rgba(255, 107, 107, 0.9);
+    transform: translateY(-50%) scale(1.05);
+}
+
+.slider-btn.prev {
+    left: 10px;
+}
+
+.slider-btn.next {
+    right: 10px;
+}
+
+/* Dots de navegação */
+.slider-controls {
     position: absolute;
     bottom: 12px;
     left: 0;
@@ -382,9 +427,21 @@ body {
 .dot {
     width: 8px;
     height: 8px;
-    background: rgba(255,255,240,0.6);
+    background: rgba(255, 255, 240, 0.5);
     border-radius: 50%;
+    cursor: pointer;
     transition: all 0.2s;
+}
+
+.dot:hover {
+    background: rgba(255, 255, 240, 0.9);
+    transform: scale(1.2);
+}
+
+.dot.active {
+    background: #FF6B6B;
+    transform: scale(1.3);
+    box-shadow: 0 0 5px rgba(255, 107, 107, 0.8);
 }
 
 .game-info {
@@ -413,7 +470,7 @@ body {
 }
 
 .game-badge {
-    background: #FF6B6B20;
+    background: rgba(255, 107, 107, 0.2);
     border-radius: 40px;
     padding: 0.3rem 1rem;
     font-size: 0.8rem;
@@ -422,6 +479,16 @@ body {
     border: 0.5px solid #FF9F6E;
 }
 
+.image-upload-info {
+    background: rgba(255, 107, 107, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+/* Footer */
 footer {
     text-align: center;
     padding: 3rem 0 2rem;
@@ -431,6 +498,15 @@ footer {
     color: #aaaadd;
 }
 
+footer p {
+    margin: 0.5rem 0;
+}
+
+footer i {
+    margin: 0 5px;
+}
+
+/* Toast Message */
 .toast-msg {
     position: fixed;
     bottom: 30px;
@@ -444,6 +520,7 @@ footer {
     opacity: 0;
     transition: opacity 0.3s;
     pointer-events: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
 .loading {
@@ -452,8 +529,71 @@ footer {
     color: #FF9F6E;
 }
 
+/* Responsividade */
 @media (max-width: 850px) {
-    .container { padding: 0 1.5rem; }
-    .hero h1, .hero .highlight-name { font-size: 3rem; }
-    .game-row { flex-direction: column; }
+    .container { 
+        padding: 0 1.5rem; 
+    }
+    
+    .hero h1, 
+    .hero .highlight-name { 
+        font-size: 3rem; 
+    }
+    
+    .hero .subhead {
+        font-size: 1.3rem;
+    }
+    
+    .hero .description {
+        font-size: 1rem;
+    }
+    
+    .game-row { 
+        flex-direction: column; 
+    }
+    
+    .slider-btn {
+        padding: 8px 12px;
+        font-size: 1rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .games-title {
+        font-size: 1.8rem;
+    }
+    
+    .game-name {
+        font-size: 1.6rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero h1, 
+    .hero .highlight-name { 
+        font-size: 2.2rem; 
+    }
+    
+    .btn-contact {
+        padding: 0.7rem 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .card {
+        padding: 1.2rem;
+    }
+    
+    .card h3 {
+        font-size: 1.3rem;
+    }
+    
+    .slider-container {
+        height: 180px;
+    }
+    
+    .slide-images img {
+        height: 180px;
+    }
 }
