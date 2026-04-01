@@ -1,197 +1,148 @@
-// ==================== FUNÇÃO PARA CARREGAR IMAGENS DA PASTA ====================
-async function loadImagesFromFolder(folderPath, containerId, dotsContainerId) {
+// ==================== CONFIGURAÇÃO DAS IMAGENS ====================
+// IMPORTANTE: Substitua 'SEU_USUARIO' e 'SEU_REPOSITORIO' pelos seus dados do GitHub
+// Exemplo: se seu GitHub é 'github.com/oTHRIP/OTH', use:
+// GITHUB_USERNAME = 'oTHRIP'
+// REPO_NAME = 'OTH'
+
+const GITHUB_USERNAME = 'oTHRIP';  // ← Coloque seu username do GitHub aqui
+const REPO_NAME = 'OTH';            // ← Coloque o nome do seu repositório aqui
+
+// URLs das imagens do Friend Chat (já organizadas)
+const friendChatImages = [
+    `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/images/friendchat1.png`,
+    `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/images/friendchat2.png`,
+    `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/images/friendchat3.png`,
+    `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/images/friendchat4.png`,
+    `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/images/friendchat5.png`
+];
+
+// URLs das imagens dos Modelos 3D (adicione aqui quando tiver as imagens)
+const modelsImages = [
+    `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/images/model1.png`,
+    `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/images/model2.png`,
+    `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/images/model3.png`
+    // Adicione mais imagens conforme necessário
+    // Se não tiver imagens ainda, os placeholders serão usados
+];
+
+// ==================== SLIDER FUNCTIONALITY ====================
+let currentSlides = {
+    friendChat: 0,
+    models: 0
+};
+
+function createSlider(sliderId, images, containerId, dotsId) {
     const container = document.getElementById(containerId);
-    const dotsContainer = document.getElementById(dotsContainerId);
+    const dotsContainer = document.getElementById(dotsId);
     
-    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
+    if (!container) return;
     
-    try {
-        let imageFiles = [];
-        
-        try {
-            const response = await fetch(`${folderPath}/images.json`);
-            if (response.ok) {
-                const data = await response.json();
-                imageFiles = data.images || [];
-            }
-        } catch (e) {
-            console.log('Tentando carregar imagens via listagem...');
-        }
-        
-        if (imageFiles.length === 0) {
-            const possibleNames = [];
-            
-            for (let i = 1; i <= 20; i++) {
-                possibleNames.push(`${i}`);
-                possibleNames.push(`image${i}`);
-                possibleNames.push(`img${i}`);
-                possibleNames.push(`photo${i}`);
-                possibleNames.push(`model${i}`);
-            }
-            
-            possibleNames.push('1', '2', '3', '4', '5', '6', '7', '8', '9', '10');
-            possibleNames.push('image', 'img', 'photo', 'picture', 'screenshot');
-            
-            for (const name of possibleNames) {
-                for (const ext of imageExtensions) {
-                    const testUrl = `${folderPath}/${name}.${ext}`;
-                    try {
-                        const imgTest = new Image();
-                        await new Promise((resolve) => {
-                            imgTest.onload = () => {
-                                if (!imageFiles.includes(`${name}.${ext}`)) {
-                                    imageFiles.push(`${name}.${ext}`);
-                                }
-                                resolve(true);
-                            };
-                            imgTest.onerror = () => resolve(false);
-                            imgTest.src = testUrl;
-                            setTimeout(() => resolve(false), 500);
-                        });
-                    } catch(e) {}
-                }
-            }
-        }
-        
-        imageFiles = [...new Set(imageFiles)];
-        
-        if (imageFiles.length > 0) {
-            container.innerHTML = '';
-            imageFiles.forEach((imgFile, index) => {
-                const img = document.createElement('img');
-                img.src = `${folderPath}/${imgFile}`;
-                img.alt = `Imagem ${index + 1}`;
-                img.onerror = () => {
-                    console.log(`Erro ao carregar: ${imgFile}`);
-                };
-                container.appendChild(img);
-            });
-            
-            dotsContainer.innerHTML = '';
-            for (let i = 0; i < imageFiles.length; i++) {
-                const dot = document.createElement('span');
-                dot.className = 'dot';
-                dotsContainer.appendChild(dot);
-            }
-            
-            const slideImages = container;
-            const imageCount = imageFiles.length;
-            if (imageCount > 1) {
-                const duration = Math.max(12, imageCount * 4);
-                slideImages.style.animation = `slideSlow ${duration}s infinite ease-in-out`;
-            } else {
-                slideImages.style.animation = 'none';
-            }
+    container.innerHTML = '';
+    dotsContainer.innerHTML = '';
+    
+    // Verificar se há imagens válidas
+    let validImages = images.filter(img => img && img !== '');
+    
+    if (validImages.length === 0) {
+        // Usar placeholders se não houver imagens
+        validImages = [
+            'https://via.placeholder.com/500x280/6B6BFF/FFFFFF?text=3D+Model+1',
+            'https://via.placeholder.com/500x280/9F6EFF/FFFFFF?text=3D+Model+2',
+            'https://via.placeholder.com/500x280/D166FF/FFFFFF?text=3D+Model+3'
+        ];
+    }
+    
+    // Add images
+    validImages.forEach((imgUrl, index) => {
+        const img = document.createElement('img');
+        img.src = imgUrl;
+        img.alt = `Image ${index + 1}`;
+        img.onerror = function() {
+            console.log(`Erro ao carregar: ${imgUrl}`);
+            this.src = 'https://via.placeholder.com/500x280/FF6B6B/FFFFFF?text=Image+Not+Found';
+        };
+        container.appendChild(img);
+    });
+    
+    // Add dots
+    validImages.forEach((_, index) => {
+        const dot = document.createElement('span');
+        dot.className = 'dot';
+        if (index === 0) dot.classList.add('active');
+        dot.onclick = () => goToSlide(sliderId, index);
+        dotsContainer.appendChild(dot);
+    });
+    
+    // Store images count for reference
+    window[`${sliderId}ImageCount`] = validImages.length;
+    
+    // Update dots on slide change
+    updateDots(sliderId);
+    
+    // Set initial position
+    updateSliderPosition(sliderId);
+}
+
+function updateSliderPosition(sliderId) {
+    const container = document.getElementById(`${sliderId}Images`);
+    if (!container) return;
+    
+    const currentSlide = currentSlides[sliderId];
+    const slideWidth = container.clientWidth;
+    container.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+}
+
+function updateDots(sliderId) {
+    const dotsContainer = document.getElementById(`${sliderId}Dots`);
+    if (!dotsContainer) return;
+    
+    const dots = dotsContainer.children;
+    const currentSlide = currentSlides[sliderId];
+    
+    for (let i = 0; i < dots.length; i++) {
+        if (i === currentSlide) {
+            dots[i].classList.add('active');
         } else {
-            container.innerHTML = `
-                <img src="https://github.com/oTHRIP/OTH/blob/main/Captura%20de%20tela%202026-04-01%20182634.png1">
-                <img src="https://github.com/oTHRIP/OTH/blob/main/Captura%20de%20tela%202026-04-01%20182720.png"Placeholder 2">
-                <img src="https://github.com/oTHRIP/OTH/blob/main/Captura%20de%20tela%202026-04-01%20182809.png" alt="Placeholder 3">
-            `;
-            dotsContainer.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+            dots[i].classList.remove('active');
         }
-        
-    } catch (error) {
-        console.error('Erro ao carregar imagens:', error);
-        container.innerHTML = `
-           <img src="https://github.com/oTHRIP/OTH/blob/main/Captura%20de%20tela%202026-04-01%20182634.png1">
-                <img src="https://github.com/oTHRIP/OTH/blob/main/Captura%20de%20tela%202026-04-01%20182720.png"Placeholder 2">
-                <img src="https://github.com/oTHRIP/OTH/blob/main/Captura%20de%20tela%202026-04-01%20182809.png" alt="Placeholder 3">
-        `;
-        dotsContainer.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
     }
 }
 
-// Função alternativa mais simples: tentar carregar imagens sequencialmente
-async function loadImagesSimple(folderPath, containerId, dotsContainerId, maxAttempts = 30) {
-    const container = document.getElementById(containerId);
-    const dotsContainer = document.getElementById(dotsContainerId);
-    const loadedImages = [];
+function nextSlide(sliderId) {
+    const images = sliderId === 'friendChat' ? friendChatImages : modelsImages;
+    const imageCount = sliderId === 'friendChat' ? friendChatImages.length : modelsImages.length;
+    if (imageCount === 0) return;
     
-    container.innerHTML = '';
-    
-    for (let i = 1; i <= maxAttempts; i++) {
-        let found = false;
-        const extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
-        
-        for (const ext of extensions) {
-            const imgUrl = `${folderPath}/${i}.${ext}`;
-            try {
-                const imgTest = new Image();
-                const loaded = await new Promise((resolve) => {
-                    imgTest.onload = () => resolve(true);
-                    imgTest.onerror = () => resolve(false);
-                    imgTest.src = imgUrl;
-                    setTimeout(() => resolve(false), 800);
-                });
-                
-                if (loaded) {
-                    const img = document.createElement('img');
-                    img.src = imgUrl;
-                    img.alt = `Imagem ${i}`;
-                    container.appendChild(img);
-                    loadedImages.push(imgUrl);
-                    found = true;
-                    break;
-                }
-            } catch(e) {}
-        }
-        
-        if (!found && loadedImages.length > 0) {
-            break;
-        }
-    }
-    
-    if (loadedImages.length === 0) {
-        const commonNames = ['image', 'img', 'photo', 'picture', 'screenshot', 'model', 'asset', 'game'];
-        for (const name of commonNames) {
-            for (let num = 1; num <= 10; num++) {
-                for (const ext of ['jpg', 'png', 'webp']) {
-                    const imgUrl = `${folderPath}/${name}${num}.${ext}`;
-                    try {
-                        const imgTest = new Image();
-                        const loaded = await new Promise((resolve) => {
-                            imgTest.onload = () => resolve(true);
-                            imgTest.onerror = () => resolve(false);
-                            imgTest.src = imgUrl;
-                            setTimeout(() => resolve(false), 500);
-                        });
-                        
-                        if (loaded) {
-                            const img = document.createElement('img');
-                            img.src = imgUrl;
-                            img.alt = `${name} ${num}`;
-                            container.appendChild(img);
-                            loadedImages.push(imgUrl);
-                        }
-                    } catch(e) {}
-                }
-            }
-            if (loadedImages.length > 0) break;
-        }
-    }
-    
-    dotsContainer.innerHTML = '';
-    for (let i = 0; i < loadedImages.length; i++) {
-        const dot = document.createElement('span');
-        dot.className = 'dot';
-        dotsContainer.appendChild(dot);
-    }
-    
-    if (loadedImages.length === 0) {
-        container.innerHTML = `
-            <img src="https://picsum.photos/id/104/500/280" alt="Placeholder 1">
-            <img src="https://picsum.photos/id/26/500/280" alt="Placeholder 2">
-            <img src="https://picsum.photos/id/175/500/280" alt="Placeholder 3">
-        `;
-        dotsContainer.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
-    } else if (loadedImages.length === 1) {
-        container.style.animation = 'none';
-    } else {
-        const duration = Math.max(12, loadedImages.length * 4);
-        container.style.animation = `slideSlow ${duration}s infinite ease-in-out`;
-    }
+    currentSlides[sliderId] = (currentSlides[sliderId] + 1) % imageCount;
+    updateSliderPosition(sliderId);
+    updateDots(sliderId);
 }
+
+function prevSlide(sliderId) {
+    const images = sliderId === 'friendChat' ? friendChatImages : modelsImages;
+    const imageCount = sliderId === 'friendChat' ? friendChatImages.length : modelsImages.length;
+    if (imageCount === 0) return;
+    
+    currentSlides[sliderId] = (currentSlides[sliderId] - 1 + imageCount) % imageCount;
+    updateSliderPosition(sliderId);
+    updateDots(sliderId);
+}
+
+function goToSlide(sliderId, index) {
+    currentSlides[sliderId] = index;
+    updateSliderPosition(sliderId);
+    updateDots(sliderId);
+}
+
+// Handle window resize to maintain slider position
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        updateSliderPosition('friendChat');
+        updateSliderPosition('models');
+    }, 100);
+});
 
 // ==================== MODAL DE CONTATO ====================
 const modal = document.getElementById('contactModal');
@@ -199,20 +150,24 @@ const contactBtn = document.getElementById('contactBtn');
 const closeModal = document.querySelector('.close-modal');
 const toast = document.getElementById('toastMessage');
 
-contactBtn.addEventListener('click', () => {
-    modal.style.display = 'flex';
-});
+if (contactBtn) {
+    contactBtn.addEventListener('click', () => {
+        modal.style.display = 'flex';
+    });
+}
 
-closeModal.addEventListener('click', () => {
-    modal.style.display = 'none';
-});
+if (closeModal) {
+    closeModal.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+}
 
 window.addEventListener('click', (e) => {
     if (e.target === modal) modal.style.display = 'none';
 });
 
 function showToast(msg) {
-    toast.textContent = msg || '📬 Mensagem enviada com sucesso!';
+    toast.textContent = msg || '📬 Message sent successfully!';
     toast.style.opacity = '1';
     setTimeout(() => {
         toast.style.opacity = '0';
@@ -221,43 +176,60 @@ function showToast(msg) {
 
 const contactForm = document.getElementById('contactForm');
 
-contactForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const name = document.getElementById('userName').value;
-    const email = document.getElementById('userEmail').value;
-    const message = document.getElementById('userMessage').value;
-    
-    const formData = new FormData();
-    formData.append('name', name);
-    formData.append('email', email);
-    formData.append('message', message);
-    formData.append('_subject', `Contato de ${name} - Portfólio`);
-    formData.append('_replyto', email);
-    
-    try {
-        const response = await fetch('https://OThalis.com.br/ajax/Henthaliss@gmail.com', {
-            method: 'POST',
-            body: formData
-        });
+if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
         
-        if (response.ok) {
-            showToast('✅ Mensagem enviada! Em breve retornarei.');
+        const name = document.getElementById('userName').value;
+        const email = document.getElementById('userEmail').value;
+        const message = document.getElementById('userMessage').value;
+        
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('email', email);
+        formData.append('message', message);
+        formData.append('_subject', `Contact from ${name} - Portfolio`);
+        formData.append('_replyto', email);
+        
+        try {
+            const response = await fetch('https://formsubmit.co/ajax/Henthaliss@gmail.com', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (response.ok) {
+                showToast('✅ Message sent! I will reply soon.');
+                contactForm.reset();
+                modal.style.display = 'none';
+            } else {
+                throw new Error('Error sending');
+            }
+        } catch (error) {
+            window.location.href = `mailto:Henthaliss@gmail.com?subject=Contact from ${name}&body=Name: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMessage:%0D%0A${message}`;
+            showToast('📧 Opening your email client');
             contactForm.reset();
             modal.style.display = 'none';
-        } else {
-            throw new Error('Erro no envio');
         }
-    } catch (error) {
-        window.location.href = `mailto:Henthaliss@gmail.com?subject=Contato de ${name}&body=Nome: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMensagem:%0D%0A${message}`;
-        showToast('📧 Abrindo seu cliente de email');
-        contactForm.reset();
-        modal.style.display = 'none';
-    }
+    });
+}
+
+// Initialize sliders when page loads
+window.addEventListener('DOMContentLoaded', () => {
+    // Verificar se as imagens existem
+    console.log('Carregando imagens do Friend Chat...');
+    createSlider('friendChat', friendChatImages, 'friendChatImages', 'friendChatDots');
+    
+    console.log('Carregando imagens dos Modelos 3D...');
+    createSlider('models', modelsImages, 'modelsImages', 'modelsDots');
+    
+    console.log('Site carregado com sucesso!');
 });
 
-// Carregar imagens das pastas
-window.addEventListener('DOMContentLoaded', () => {
-    loadImagesSimple('Friend chat imagens', 'friendChatImages', 'friendChatDots', 25);
-    loadImagesSimple('3D model imagens', 'modelsImages', 'modelsDots', 25);
-});
+// Função auxiliar para testar se as imagens estão carregando
+function checkImagesLoaded() {
+    console.log('Friend Chat images:', friendChatImages.length);
+    console.log('3D Models images:', modelsImages.length);
+}
+
+// Executar verificação
+checkImagesLoaded();
