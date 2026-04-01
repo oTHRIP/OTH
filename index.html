@@ -606,7 +606,7 @@
         
         if (loadedImages.length === 0) {
             container.innerHTML = `
-                <img src="https://picsum.photos/id/104/500/280" alt="Placeholder 1">
+                <img src="https://br.pinterest.com/pin/239535273929327667/">
                 <img src="https://picsum.photos/id/26/500/280" alt="Placeholder 2">
                 <img src="https://picsum.photos/id/175/500/280" alt="Placeholder 3">
             `;
@@ -678,7 +678,7 @@
                     throw new Error('Erro');
                 }
             } catch (error) {
-                window.location.href = `mailto:Henthaliss@gmail.com?subject=Contato de ${name}&body=Nome: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMensagem:%0D%0A${message}`;
+                window.location.href = `mailto:formsubmit.co.com?subject=Contato de ${name}&body=Nome: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMensagem:%0D%0A${message}`;
                 showToast('📧 Abrindo seu cliente de email');
                 contactForm.reset();
                 modal.style.display = 'none';
