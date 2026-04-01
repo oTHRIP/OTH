@@ -261,3 +261,4 @@ window.addEventListener('DOMContentLoaded', () => {
     loadImagesSimple('Friend chat imagens', 'friendChatImages', 'friendChatDots', 25);
     loadImagesSimple('3D model imagens', 'modelsImages', 'modelsDots', 25);
 });
+ 
