@@ -84,9 +84,9 @@ async function loadImagesFromFolder(folderPath, containerId, dotsContainerId) {
             }
         } else {
             container.innerHTML = `
-                <img src="https://picsum.photos/id/104/500/280" alt="Placeholder 1">
-                <img src="https://picsum.photos/id/26/500/280" alt="Placeholder 2">
-                <img src="https://picsum.photos/id/175/500/280" alt="Placeholder 3">
+                <img src="https://github.com/oTHRIP/OTH/blob/main/Captura%20de%20tela%202026-04-01%20182634.png1">
+                <img src="https://github.com/oTHRIP/OTH/blob/main/Captura%20de%20tela%202026-04-01%20182720.png"Placeholder 2">
+                <img src="https://github.com/oTHRIP/OTH/blob/main/Captura%20de%20tela%202026-04-01%20182809.png" alt="Placeholder 3">
             `;
             dotsContainer.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
         }
@@ -94,9 +94,9 @@ async function loadImagesFromFolder(folderPath, containerId, dotsContainerId) {
     } catch (error) {
         console.error('Erro ao carregar imagens:', error);
         container.innerHTML = `
-            <img src="https://picsum.photos/id/104/500/280" alt="Placeholder 1">
-            <img src="https://picsum.photos/id/26/500/280" alt="Placeholder 2">
-            <img src="https://picsum.photos/id/175/500/280" alt="Placeholder 3">
+           <img src="https://github.com/oTHRIP/OTH/blob/main/Captura%20de%20tela%202026-04-01%20182634.png1">
+                <img src="https://github.com/oTHRIP/OTH/blob/main/Captura%20de%20tela%202026-04-01%20182720.png"Placeholder 2">
+                <img src="https://github.com/oTHRIP/OTH/blob/main/Captura%20de%20tela%202026-04-01%20182809.png" alt="Placeholder 3">
         `;
         dotsContainer.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
     }
