@@ -595,14 +595,23 @@
 
 <script>
     // ==================== CONFIGURE YOUR IMAGES HERE ====================
-    // Add your image URLs for the Friend Chat game
+    // IMPORTANT: Replace 'SEU_USUARIO' and 'SEU_REPOSITORIO' with your GitHub info
+    // Example: if your GitHub is 'github.com/ThalisH/portfolio', use:
+    // https://raw.githubusercontent.com/ThalisH/portfolio/main/images/friendchat1.png
+    
+    const GITHUB_USERNAME = 'SEU_USUARIO';  // ← Replace with your GitHub username
+    const REPO_NAME = 'SEU_REPOSITORIO';     // ← Replace with your repository name
+    
+    // Friend Chat Images (using your uploaded images)
     const friendChatImages = [
-        'https://via.placeholder.com/500x280/FF6B6B/FFFFFF?text=Friend+Chat+1',
-        'https://via.placeholder.com/500x280/FF9F6E/FFFFFF?text=Friend+Chat+2',
-        'https://via.placeholder.com/500x280/FFD166/FFFFFF?text=Friend+Chat+3'
+        `https://raw.githubusercontent.com/${oTHRIP}/${OTH}/main/images/friendchat1.png`,
+        `https://raw.githubusercontent.com/${oTHRIP}/${OTH}/main/images/friendchat2.png`,
+        `https://raw.githubusercontent.com/${oTHRIP}/${OTH}/main/images/friendchat3.png`,
+        `https://raw.githubusercontent.com/${oTHRIP}/${OTH}/main/images/friendchat4.png`,
+        `https://raw.githubusercontent.com/${oTHRIP}/${OTH}/main/images/friendchat5.png`
     ];
     
-    // Add your image URLs for the 3D Models section
+    // 3D Models Images (add your images here when ready)
     const modelsImages = [
         'https://via.placeholder.com/500x280/6B6BFF/FFFFFF?text=3D+Model+1',
         'https://via.placeholder.com/500x280/9F6EFF/FFFFFF?text=3D+Model+2',
