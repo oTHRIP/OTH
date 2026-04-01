@@ -161,6 +161,7 @@
         .btn-contact:hover {
             background: #FF6B6B;
             color: #0a0a1a;
+            transform: scale(1.02);
         }
 
         .modal {
@@ -228,6 +229,12 @@
             font-family: 'Inter', sans-serif;
         }
 
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #FF6B6B;
+        }
+
         .btn-submit {
             width: 100%;
             background: linear-gradient(135deg, #FF6B6B, #FF9F6E);
@@ -271,6 +278,12 @@
             flex: 1;
             min-width: 240px;
             border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 107, 107, 0.5);
         }
 
         .card i {
@@ -330,7 +343,7 @@
             display: flex;
             width: 100%;
             height: 100%;
-            animation: slideSlow 16s infinite ease-in-out;
+            transition: transform 0.5s ease-in-out;
         }
 
         .slide-images img {
@@ -340,14 +353,31 @@
             height: 220px;
         }
 
-        @keyframes slideSlow {
-            0% { transform: translateX(0%); }
-            25% { transform: translateX(0%); }
-            33% { transform: translateX(-100%); }
-            58% { transform: translateX(-100%); }
-            66% { transform: translateX(-200%); }
-            91% { transform: translateX(-200%); }
-            100% { transform: translateX(0%); }
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 10px 15px;
+            font-size: 18px;
+            z-index: 10;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .slider-btn:hover {
+            background: rgba(255, 107, 107, 0.8);
+        }
+
+        .slider-btn.prev {
+            left: 10px;
+        }
+
+        .slider-btn.next {
+            right: 10px;
         }
 
         .slider-dots {
@@ -366,6 +396,14 @@
             height: 8px;
             background: rgba(255,255,240,0.6);
             border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background: #FF6B6B;
+            width: 20px;
+            border-radius: 10px;
         }
 
         .game-info {
@@ -488,7 +526,7 @@
         </div>
 
         <div class="benefits">
-            <div class="section-title">✨ 𝐌𝐲 𝐒𝐩𝐞𝐜𝐢𝐚𝐥𝐭𝐢𝐞𝐬</div>
+            <div class="section-title">✨ My Specialties</div>
             <div class="cards-grid">
                 <div class="card">
                     <i class="fas fa-laptop-code"></i>
@@ -518,6 +556,8 @@
                             <div class="slide-images" id="friendChatImages">
                                 <div class="loading">Carregando imagens...</div>
                             </div>
+                            <button class="slider-btn prev" onclick="changeSlide('friendChat', -1)">❮</button>
+                            <button class="slider-btn next" onclick="changeSlide('friendChat', 1)">❯</button>
                             <div class="slider-dots" id="friendChatDots"></div>
                         </div>
                     </div>
@@ -537,6 +577,8 @@
                             <div class="slide-images" id="modelsImages">
                                 <div class="loading">Carregando imagens...</div>
                             </div>
+                            <button class="slider-btn prev" onclick="changeSlide('models', -1)">❮</button>
+                            <button class="slider-btn next" onclick="changeSlide('models', 1)">❯</button>
                             <div class="slider-dots" id="modelsDots"></div>
                         </div>
                     </div>
@@ -558,67 +600,142 @@
 <div id="toastMessage" class="toast-msg">📬 Mensagem enviada com sucesso!</div>
 
 <script>
-    async function loadImagesSimple(folderPath, containerId, dotsContainerId, maxAttempts = 30) {
-        const container = document.getElementById(containerId);
-        const dotsContainer = document.getElementById(dotsContainerId);
+    // Configuração dos sliders
+    const sliders = {
+        friendChat: {
+            images: [],
+            currentIndex: 0,
+            containerId: 'friendChatImages',
+            dotsId: 'friendChatDots'
+        },
+        models: {
+            images: [],
+            currentIndex: 0,
+            containerId: 'modelsImages',
+            dotsId: 'modelsDots'
+        }
+    };
+
+    // Função para carregar imagens do Friend Chat
+    async function loadFriendChatImages() {
+        const imageNames = ['friendchat1.png', 'friendchat2.png', 'friendchat3.png', 'friendchat4.png', 'friendchat5.png'];
+        const basePath = 'images/';
         const loadedImages = [];
         
-        if (!container || !dotsContainer) return;
-        
-        container.innerHTML = '';
-        
-        for (let i = 1; i <= maxAttempts; i++) {
-            let found = false;
-            const extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
-            
-            for (const ext of extensions) {
-                const imgUrl = `${folderPath}/${i}.${ext}`;
-                try {
-                    const loaded = await new Promise((resolve) => {
-                        const imgTest = new Image();
-                        imgTest.onload = () => resolve(true);
-                        imgTest.onerror = () => resolve(false);
-                        imgTest.src = imgUrl;
-                        setTimeout(() => resolve(false), 500);
-                    });
-                    
-                    if (loaded) {
-                        const img = document.createElement('img');
-                        img.src = imgUrl;
-                        img.alt = `Imagem ${i}`;
-                        container.appendChild(img);
-                        loadedImages.push(imgUrl);
-                        found = true;
-                        break;
-                    }
-                } catch(e) {}
+        for (const imgName of imageNames) {
+            const imgUrl = basePath + imgName;
+            try {
+                const img = new Image();
+                const loaded = await new Promise((resolve) => {
+                    img.onload = () => resolve(true);
+                    img.onerror = () => resolve(false);
+                    img.src = imgUrl;
+                    setTimeout(() => resolve(false), 3000);
+                });
+                
+                if (loaded) {
+                    loadedImages.push(imgUrl);
+                }
+            } catch(e) {
+                console.log(`Erro ao carregar ${imgName}`);
             }
-            
-            if (!found && loadedImages.length > 0) break;
         }
         
+        return loadedImages;
+    }
+
+    // Função para carregar imagens dos modelos 3D (usando placeholders por enquanto)
+    async function loadModelsImages() {
+        // Você pode adicionar suas imagens de modelos 3D aqui
+        // Exemplo: ['model1.png', 'model2.png', etc.]
+        const placeholders = [
+            'https://picsum.photos/id/104/500/280',
+            'https://picsum.photos/id/26/500/280',
+            'https://picsum.photos/id/175/500/280'
+        ];
+        
+        return placeholders;
+    }
+
+    // Função para atualizar o slider
+    function updateSlider(sliderName) {
+        const slider = sliders[sliderName];
+        const container = document.getElementById(slider.containerId);
+        const dotsContainer = document.getElementById(slider.dotsId);
+        
+        if (!container || slider.images.length === 0) return;
+        
+        // Atualizar imagens
+        container.innerHTML = '';
+        slider.images.forEach((imgUrl, index) => {
+            const img = document.createElement('img');
+            img.src = imgUrl;
+            img.alt = `Imagem ${index + 1}`;
+            container.appendChild(img);
+        });
+        
+        // Ajustar largura do container
+        container.style.transform = `translateX(-${slider.currentIndex * 100}%)`;
+        
+        // Atualizar dots
         dotsContainer.innerHTML = '';
-        for (let i = 0; i < loadedImages.length; i++) {
+        slider.images.forEach((_, index) => {
             const dot = document.createElement('span');
             dot.className = 'dot';
+            if (index === slider.currentIndex) dot.classList.add('active');
+            dot.onclick = () => goToSlide(sliderName, index);
             dotsContainer.appendChild(dot);
+        });
+    }
+
+    // Função para mudar de slide
+    function changeSlide(sliderName, direction) {
+        const slider = sliders[sliderName];
+        if (slider.images.length === 0) return;
+        
+        slider.currentIndex += direction;
+        
+        if (slider.currentIndex < 0) {
+            slider.currentIndex = slider.images.length - 1;
+        } else if (slider.currentIndex >= slider.images.length) {
+            slider.currentIndex = 0;
         }
         
-        if (loadedImages.length === 0) {
-            container.innerHTML = `
-                <img src="https://br.pinterest.com/pin/239535273929327667/">
-                <img src="https://picsum.photos/id/26/500/280" alt="Placeholder 2">
-                <img src="https://picsum.photos/id/175/500/280" alt="Placeholder 3">
-            `;
-            dotsContainer.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
-        } else if (loadedImages.length === 1) {
-            container.style.animation = 'none';
-        } else {
-            const duration = Math.max(12, loadedImages.length * 4);
-            container.style.animation = `slideSlow ${duration}s infinite ease-in-out`;
-        }
+        const container = document.getElementById(slider.containerId);
+        container.style.transform = `translateX(-${slider.currentIndex * 100}%)`;
+        
+        // Atualizar dots ativos
+        const dots = document.querySelectorAll(`#${slider.dotsId} .dot`);
+        dots.forEach((dot, index) => {
+            if (index === slider.currentIndex) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
     }
-    
+
+    // Função para ir para um slide específico
+    function goToSlide(sliderName, index) {
+        const slider = sliders[sliderName];
+        if (slider.images.length === 0) return;
+        
+        slider.currentIndex = index;
+        const container = document.getElementById(slider.containerId);
+        container.style.transform = `translateX(-${slider.currentIndex * 100}%)`;
+        
+        // Atualizar dots ativos
+        const dots = document.querySelectorAll(`#${slider.dotsId} .dot`);
+        dots.forEach((dot, i) => {
+            if (i === slider.currentIndex) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+    }
+
+    // Modal e formulário
     const modal = document.getElementById('contactModal');
     const contactBtn = document.getElementById('contactBtn');
     const closeModal = document.querySelector('.close-modal');
@@ -678,7 +795,7 @@
                     throw new Error('Erro');
                 }
             } catch (error) {
-                window.location.href = `mailto:formsubmit.co.com?subject=Contato de ${name}&body=Nome: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMensagem:%0D%0A${message}`;
+                window.location.href = `mailto:Henthaliss@gmail.com?subject=Contato de ${name}&body=Nome: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMensagem:%0D%0A${message}`;
                 showToast('📧 Abrindo seu cliente de email');
                 contactForm.reset();
                 modal.style.display = 'none';
@@ -686,9 +803,21 @@
         });
     }
     
-    window.addEventListener('DOMContentLoaded', () => {
-        loadImagesSimple('Friend chat imagens', 'friendChatImages', 'friendChatDots', 25);
-        loadImagesSimple('3D model imagens', 'modelsImages', 'modelsDots', 25);
+    // Inicializar os sliders
+    window.addEventListener('DOMContentLoaded', async () => {
+        // Carregar imagens do Friend Chat
+        const friendChatImages = await loadFriendChatImages();
+        sliders.friendChat.images = friendChatImages;
+        if (friendChatImages.length > 0) {
+            updateSlider('friendChat');
+        } else {
+            document.getElementById('friendChatImages').innerHTML = '<div class="loading">⚠️ Nenhuma imagem encontrada na pasta images/</div>';
+        }
+        
+        // Carregar imagens dos Modelos 3D
+        const modelsImages = await loadModelsImages();
+        sliders.models.images = modelsImages;
+        updateSlider('models');
     });
 </script>
 
