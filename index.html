@@ -330,7 +330,7 @@
             display: flex;
             width: 100%;
             height: 100%;
-            animation: slideSlow 16s infinite ease-in-out;
+            transition: transform 0.5s ease-in-out;
         }
 
         .slide-images img {
@@ -340,17 +340,7 @@
             height: 220px;
         }
 
-        @keyframes slideSlow {
-            0% { transform: translateX(0%); }
-            25% { transform: translateX(0%); }
-            33% { transform: translateX(-100%); }
-            58% { transform: translateX(-100%); }
-            66% { transform: translateX(-200%); }
-            91% { transform: translateX(-200%); }
-            100% { transform: translateX(0%); }
-        }
-
-        .slider-dots {
+        .slider-controls {
             position: absolute;
             bottom: 12px;
             left: 0;
@@ -361,11 +351,44 @@
             z-index: 5;
         }
 
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 50%;
+            z-index: 10;
+            transition: all 0.3s;
+        }
+
+        .slider-btn:hover {
+            background: rgba(255,107,107,0.8);
+        }
+
+        .slider-btn.prev {
+            left: 10px;
+        }
+
+        .slider-btn.next {
+            right: 10px;
+        }
+
         .dot {
             width: 8px;
             height: 8px;
             background: rgba(255,255,240,0.6);
             border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .dot.active {
+            background: #FF6B6B;
+            transform: scale(1.3);
         }
 
         .game-info {
@@ -425,16 +448,22 @@
             pointer-events: none;
         }
 
-        .loading {
+        .image-upload-info {
+            background: rgba(255,107,107,0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
             text-align: center;
-            padding: 2rem;
-            color: #FF9F6E;
         }
 
         @media (max-width: 850px) {
             .container { padding: 0 1.5rem; }
             .hero h1, .hero .highlight-name { font-size: 3rem; }
             .game-row { flex-direction: column; }
+            .slider-btn {
+                padding: 5px 10px;
+            }
         }
     </style>
 </head>
@@ -488,7 +517,7 @@
         </div>
 
         <div class="benefits">
-            <div class="section-title">✨ 𝐌𝐲 𝐒𝐩𝐞𝐜𝐢𝐚𝐥𝐭𝐢𝐞𝐬</div>
+            <div class="section-title">✨ My Specialties</div>
             <div class="cards-grid">
                 <div class="card">
                     <i class="fas fa-laptop-code"></i>
@@ -508,17 +537,19 @@
         
         <div class="games-section">
             <div class="games-title">
-                <i class="fas fa-gamepad" style="margin-right: 12px;"></i> Meus Jogos & Demos
+                <i class="fas fa-gamepad" style="margin-right: 12px;"></i> My Games & Demos
             </div>
-			
+            
             <div class="games-container">
                 <div class="game-row">
                     <div class="game-slider">
                         <div class="slider-container">
                             <div class="slide-images" id="friendChatImages">
-                                <div class="loading">Carregando imagens...</div>
+                                <!-- Images will be loaded here -->
                             </div>
-                            <div class="slider-dots" id="friendChatDots"></div>
+                            <button class="slider-btn prev" onclick="prevSlide('friendChat')">❮</button>
+                            <button class="slider-btn next" onclick="nextSlide('friendChat')">❯</button>
+                            <div class="slider-controls" id="friendChatDots"></div>
                         </div>
                     </div>
                     <div class="game-info">
@@ -535,90 +566,144 @@
                     <div class="game-slider">
                         <div class="slider-container">
                             <div class="slide-images" id="modelsImages">
-                                <div class="loading">Carregando imagens...</div>
+                                <!-- Images will be loaded here -->
                             </div>
-                            <div class="slider-dots" id="modelsDots"></div>
+                            <button class="slider-btn prev" onclick="prevSlide('models')">❮</button>
+                            <button class="slider-btn next" onclick="nextSlide('models')">❯</button>
+                            <div class="slider-controls" id="modelsDots"></div>
                         </div>
                     </div>
                     <div class="game-info">
                         <div class="game-name">3D Models</div>
                         <div class="game-desc">Most of my 3D models are created for games and commercial use. Feel free to contact me through the 'Contact' button above</div>
                         <div class="game-badge"><i class="fa fa-cubes"></i> My Assets</div>
+                        <div class="image-upload-info">
+                            <i class="fas fa-info-circle"></i> To add your images, edit the imageUrls arrays in the JavaScript section
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <footer>
-        <p>© 2026 Thalis Henrick — Desenvolvedor | 🇧🇷</p>
+        <p>© 2026 Thalis Henrick — Developer | 🇧🇷</p>
         <p><i class="fab fa-github"></i> /OThrip  |  <i class="fa fa-gamepad"></i> oThrip</p>
     </footer>
 </main>
 
-<div id="toastMessage" class="toast-msg">📬 Mensagem enviada com sucesso!</div>
+<div id="toastMessage" class="toast-msg">📬 Message sent successfully!</div>
 
 <script>
-    async function loadImagesSimple(folderPath, containerId, dotsContainerId, maxAttempts = 30) {
+    // ==================== CONFIGURE YOUR IMAGES HERE ====================
+    // Add your image URLs for the Friend Chat game
+    const friendChatImages = [
+        'https://via.placeholder.com/500x280/FF6B6B/FFFFFF?text=Friend+Chat+1',
+        'https://via.placeholder.com/500x280/FF9F6E/FFFFFF?text=Friend+Chat+2',
+        'https://via.placeholder.com/500x280/FFD166/FFFFFF?text=Friend+Chat+3'
+    ];
+    
+    // Add your image URLs for the 3D Models section
+    const modelsImages = [
+        'https://via.placeholder.com/500x280/6B6BFF/FFFFFF?text=3D+Model+1',
+        'https://via.placeholder.com/500x280/9F6EFF/FFFFFF?text=3D+Model+2',
+        'https://via.placeholder.com/500x280/D166FF/FFFFFF?text=3D+Model+3'
+    ];
+    
+    // ==================== SLIDER FUNCTIONALITY ====================
+    let currentSlides = {
+        friendChat: 0,
+        models: 0
+    };
+    
+    function createSlider(sliderId, images, containerId, dotsId) {
         const container = document.getElementById(containerId);
-        const dotsContainer = document.getElementById(dotsContainerId);
-        const loadedImages = [];
+        const dotsContainer = document.getElementById(dotsId);
         
-        if (!container || !dotsContainer) return;
+        if (!container) return;
         
         container.innerHTML = '';
-        
-        for (let i = 1; i <= maxAttempts; i++) {
-            let found = false;
-            const extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
-            
-            for (const ext of extensions) {
-                const imgUrl = `${folderPath}/${i}.${ext}`;
-                try {
-                    const loaded = await new Promise((resolve) => {
-                        const imgTest = new Image();
-                        imgTest.onload = () => resolve(true);
-                        imgTest.onerror = () => resolve(false);
-                        imgTest.src = imgUrl;
-                        setTimeout(() => resolve(false), 500);
-                    });
-                    
-                    if (loaded) {
-                        const img = document.createElement('img');
-                        img.src = imgUrl;
-                        img.alt = `Imagem ${i}`;
-                        container.appendChild(img);
-                        loadedImages.push(imgUrl);
-                        found = true;
-                        break;
-                    }
-                } catch(e) {}
-            }
-            
-            if (!found && loadedImages.length > 0) break;
-        }
-        
         dotsContainer.innerHTML = '';
-        for (let i = 0; i < loadedImages.length; i++) {
+        
+        // Add images
+        images.forEach((imgUrl, index) => {
+            const img = document.createElement('img');
+            img.src = imgUrl;
+            img.alt = `Image ${index + 1}`;
+            container.appendChild(img);
+        });
+        
+        // Add dots
+        images.forEach((_, index) => {
             const dot = document.createElement('span');
             dot.className = 'dot';
+            if (index === 0) dot.classList.add('active');
+            dot.onclick = () => goToSlide(sliderId, index);
             dotsContainer.appendChild(dot);
-        }
+        });
         
-        if (loadedImages.length === 0) {
-            container.innerHTML = `
-                <img src="https://br.pinterest.com/pin/239535273929327667/">
-                <img src="https://picsum.photos/id/26/500/280" alt="Placeholder 2">
-                <img src="https://picsum.photos/id/175/500/280" alt="Placeholder 3">
-            `;
-            dotsContainer.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
-        } else if (loadedImages.length === 1) {
-            container.style.animation = 'none';
-        } else {
-            const duration = Math.max(12, loadedImages.length * 4);
-            container.style.animation = `slideSlow ${duration}s infinite ease-in-out`;
+        // Update dots on slide change
+        updateDots(sliderId);
+        
+        // Set initial position
+        updateSliderPosition(sliderId);
+    }
+    
+    function updateSliderPosition(sliderId) {
+        const container = document.getElementById(`${sliderId}Images`);
+        if (!container) return;
+        
+        const currentSlide = currentSlides[sliderId];
+        const slideWidth = container.clientWidth;
+        container.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+    }
+    
+    function updateDots(sliderId) {
+        const dotsContainer = document.getElementById(`${sliderId}Dots`);
+        if (!dotsContainer) return;
+        
+        const dots = dotsContainer.children;
+        const currentSlide = currentSlides[sliderId];
+        
+        for (let i = 0; i < dots.length; i++) {
+            if (i === currentSlide) {
+                dots[i].classList.add('active');
+            } else {
+                dots[i].classList.remove('active');
+            }
         }
     }
     
+    function nextSlide(sliderId) {
+        const images = sliderId === 'friendChat' ? friendChatImages : modelsImages;
+        currentSlides[sliderId] = (currentSlides[sliderId] + 1) % images.length;
+        updateSliderPosition(sliderId);
+        updateDots(sliderId);
+    }
+    
+    function prevSlide(sliderId) {
+        const images = sliderId === 'friendChat' ? friendChatImages : modelsImages;
+        currentSlides[sliderId] = (currentSlides[sliderId] - 1 + images.length) % images.length;
+        updateSliderPosition(sliderId);
+        updateDots(sliderId);
+    }
+    
+    function goToSlide(sliderId, index) {
+        currentSlides[sliderId] = index;
+        updateSliderPosition(sliderId);
+        updateDots(sliderId);
+    }
+    
+    // Handle window resize to maintain slider position
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            updateSliderPosition('friendChat');
+            updateSliderPosition('models');
+        }, 100);
+    });
+    
+    // ==================== MODAL DE CONTATO ====================
     const modal = document.getElementById('contactModal');
     const contactBtn = document.getElementById('contactBtn');
     const closeModal = document.querySelector('.close-modal');
@@ -662,7 +747,7 @@
             formData.append('name', name);
             formData.append('email', email);
             formData.append('message', message);
-            formData.append('_subject', `Contato de ${name} - Portfólio`);
+            formData.append('_subject', `Contact from ${name} - Portfolio`);
             
             try {
                 const response = await fetch('https://formsubmit.co/ajax/Henthaliss@gmail.com', {
@@ -671,24 +756,25 @@
                 });
                 
                 if (response.ok) {
-                    showToast('✅ Mensagem enviada! Em breve retornarei.');
+                    showToast('✅ Message sent! I will reply soon.');
                     contactForm.reset();
                     modal.style.display = 'none';
                 } else {
-                    throw new Error('Erro');
+                    throw new Error('Error');
                 }
             } catch (error) {
-                window.location.href = `mailto:formsubmit.co.com?subject=Contato de ${name}&body=Nome: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMensagem:%0D%0A${message}`;
-                showToast('📧 Abrindo seu cliente de email');
+                window.location.href = `mailto:Henthaliss@gmail.com?subject=Contact from ${name}&body=Name: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMessage:%0D%0A${message}`;
+                showToast('📧 Opening your email client');
                 contactForm.reset();
                 modal.style.display = 'none';
             }
         });
     }
     
+    // Initialize sliders when page loads
     window.addEventListener('DOMContentLoaded', () => {
-        loadImagesSimple('Friend chat imagens', 'friendChatImages', 'friendChatDots', 25);
-        loadImagesSimple('3D model imagens', 'modelsImages', 'modelsDots', 25);
+        createSlider('friendChat', friendChatImages, 'friendChatImages', 'friendChatDots');
+        createSlider('models', modelsImages, 'modelsImages', 'modelsDots');
     });
 </script>
 
