@@ -192,7 +192,29 @@ async function loadImagesSimple(folderPath, containerId, dotsContainerId, maxAtt
         container.style.animation = `slideSlow ${duration}s infinite ease-in-out`;
     }
 }
+async function loadVisits() {
+    const universeId = 'COLOCA_AQUI'; // ⚠️ vou te ajudar nisso abaixo
 
+    try {
+        const res = await fetch(`https://games.roblox.com/v1/games?universeIds=${universeId}`);
+        const data = await res.json();
+
+        const visits = data.data[0].visits;
+
+        document.getElementById('visits').textContent =
+            formatNumber(visits) + ' visits';
+
+    } catch (e) {
+        document.getElementById('visits').textContent =
+            'Erro ao carregar visitas';
+    }
+}
+
+function formatNumber(num) {
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return num;
+}
 // ==================== MODAL DE CONTATO ====================
 const modal = document.getElementById('contactModal');
 const contactBtn = document.getElementById('contactBtn');
