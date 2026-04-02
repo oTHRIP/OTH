@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>oTh</title>
+    <title>oTh | Thalis Henrick</title>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
@@ -31,13 +31,11 @@
             user-select: none;
         }
 
-        /* Desabilitar zoom e menu de contexto */
         body, html {
             touch-action: pan-x pan-y;
             -ms-touch-action: pan-x pan-y;
         }
 
-        /* Desabilitar menu de contexto ao clicar com botão direito */
         body {
             -webkit-touch-callout: none;
         }
@@ -50,7 +48,45 @@
             z-index: 5;
         }
 
-        /* Animações da boca desfocada */
+        /* Language Selector */
+        .lang-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(20, 20, 45, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+            padding: 8px 16px;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            display: flex;
+            gap: 8px;
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: #BDC7F0;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 30px;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .lang-btn.active {
+            background: #FF6B6B;
+            color: #0a0a1a;
+        }
+
+        .lang-btn:hover:not(.active) {
+            background: rgba(255, 107, 107, 0.3);
+            color: white;
+        }
+
+        /* Blurred mouth animations */
         .blurred-mouth {
             position: fixed;
             top: 0;
@@ -491,6 +527,8 @@
             .game-row { flex-direction: column; }
             .slider-container { height: 220px; }
             .slide-images img { height: 220px; }
+            .lang-selector { top: 10px; right: 10px; padding: 5px 12px; }
+            .lang-btn { font-size: 0.75rem; padding: 3px 8px; }
         }
     </style>
 </head>
@@ -502,27 +540,34 @@
     <div class="mouth-element third"></div>
 </div>
 
+<!-- Language Selector -->
+<div class="lang-selector">
+    <button class="lang-btn" data-lang="en">EN</button>
+    <button class="lang-btn" data-lang="pt">PT</button>
+    <button class="lang-btn" data-lang="es">ES</button>
+</div>
+
 <div id="contactModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3><i class="fas fa-envelope"></i> Fale Comigo</h3>
+            <h3 id="modalTitle"><i class="fas fa-envelope"></i> Contact Me</h3>
             <span class="close-modal">&times;</span>
         </div>
         <form id="contactForm">
             <div class="form-group">
-                <label><i class="fas fa-user"></i> Seu Nome</label>
-                <input type="text" id="userName" required placeholder="Digite seu nome">
+                <label id="nameLabel"><i class="fas fa-user"></i> Your Name</label>
+                <input type="text" id="userName" required id="nameInput" placeholder="Enter your name">
             </div>
             <div class="form-group">
-                <label><i class="fas fa-envelope"></i> Seu Email</label>
-                <input type="email" id="userEmail" required placeholder="Digite seu email">
+                <label id="emailLabel"><i class="fas fa-envelope"></i> Your Email</label>
+                <input type="email" id="userEmail" required id="emailInput" placeholder="Enter your email">
             </div>
             <div class="form-group">
-                <label><i class="fas fa-comment"></i> Mensagem</label>
-                <textarea id="userMessage" required placeholder="O que você gostaria de comentar?"></textarea>
+                <label id="messageLabel"><i class="fas fa-comment"></i> Message</label>
+                <textarea id="userMessage" required id="messageInput" placeholder="What would you like to say?"></textarea>
             </div>
-            <button type="submit" class="btn-submit">
-                <i class="fas fa-paper-plane"></i> Enviar Mensagem
+            <button type="submit" class="btn-submit" id="submitBtn">
+                <i class="fas fa-paper-plane"></i> Send Message
             </button>
         </form>
     </div>
@@ -534,36 +579,36 @@
             <h1>HELLO I'M <br>
                 <span class="highlight-name">Thalis Henrick</span>
             </h1>
-            <div class="subhead">Th Developer</div>
-            <div class="description">
+            <div class="subhead" id="subhead">Th Developer</div>
+            <div class="description" id="description">
                 low poly modeler & game developer on the Roblox platform.
             </div>
             <button class="btn-contact" id="contactBtn">
-                <i class="fas fa-paper-plane"></i> Contact
+                <i class="fas fa-paper-plane"></i> <span id="contactBtnText">Contact</span>
             </button>
         </div>
 
         <div class="benefits">
-            <div class="section-title">✨ My Specialties</div>
+            <div class="section-title" id="specialtiesTitle">✨ My Specialties</div>
             <div class="cards-grid">
                 <div class="card">
                     <i class="fas fa-laptop-code"></i>
-                    <h3>Game Development</h3>
-                    <p>Game developer on Roblox, building immersive and unique experiences</p>
+                    <h3 id="card1Title">Game Development</h3>
+                    <p id="card1Desc">Game developer on Roblox, building immersive and unique experiences</p>
                 </div>
                 <div class="card">
                     <i class="fas fa-cube"></i>
-                    <h3>3D Modeler</h3>
-                    <p>3D modeling for creating and managing detailed assets.</p>
+                    <h3 id="card2Title">3D Modeler</h3>
+                    <p id="card2Desc">3D modeling for creating and managing detailed assets.</p>
                 </div>
             </div>
-            <div style="margin-top: 1rem; font-style: italic; color:#BBB0FF; text-align:center;">
+            <div style="margin-top: 1rem; font-style: italic; color:#BBB0FF; text-align:center;" id="attentionText">
                 Attention to detail is what makes your business succeed
             </div>
         </div>
         
         <div class="games-section">
-            <div class="games-title">
+            <div class="games-title" id="gamesTitle">
                 <i class="fas fa-gamepad" style="margin-right: 12px;"></i> My Game & My Assets
             </div>
 			
@@ -572,7 +617,7 @@
                     <div class="game-slider">
                         <div class="slider-container">
                             <div class="slide-images" id="friendChatImages">
-                                <div class="loading">Carregando imagens...</div>
+                                <div class="loading" id="loadingFriendChat">Loading images...</div>
                             </div>
                             <button class="slider-btn prev" onclick="changeSlide('friendChat', -1)">❮</button>
                             <button class="slider-btn next" onclick="changeSlide('friendChat', 1)">❯</button>
@@ -581,8 +626,8 @@
                     </div>
                     <div class="game-info">
                         <div class="game-name">Friend Chat</div>
-                        <div class="game-desc">This game was developed by me and a friend under the codename Mikashi. We created this game with the intention of providing a fun experience for people to interact with each other and chat</div>
-                        <div class="game-badge"><i class="fa fa-comments"></i> My Game</div>
+                        <div class="game-desc" id="friendChatDesc">This game was developed by me and a friend under the codename Mikashi. We created this game with the intention of providing a fun experience for people to interact with each other and chat</div>
+                        <div class="game-badge"><i class="fa fa-comments"></i> <span id="friendChatBadge">My Game</span></div>
                         <p style="margin-top: 1rem; font-size:0.85rem; opacity:0.8;">
                             <i class="fa fa-code"></i> By: Mikashi & Thrip
                         </p>
@@ -593,7 +638,7 @@
                     <div class="game-slider">
                         <div class="slider-container">
                             <div class="slide-images" id="modelsImages">
-                                <div class="loading">Carregando imagens...</div>
+                                <div class="loading" id="loadingModels">Loading images...</div>
                             </div>
                             <button class="slider-btn prev" onclick="changeSlide('models', -1)">❮</button>
                             <button class="slider-btn next" onclick="changeSlide('models', 1)">❯</button>
@@ -602,37 +647,184 @@
                     </div>
                     <div class="game-info">
                         <div class="game-name">3D Models</div>
-                        <div class="game-desc">Most of my 3D models are created for games and commercial use. Feel free to contact me through the 'Contact' button above</div>
-                        <div class="game-badge"><i class="fa fa-cubes"></i> My Assets</div>
+                        <div class="game-desc" id="modelsDesc">Most of my 3D models are created for games and commercial use. Feel free to contact me through the 'Contact' button above</div>
+                        <div class="game-badge"><i class="fa fa-cubes"></i> <span id="modelsBadge">My Assets</span></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <footer>
-        <p>© 2026 Thalis Henrick — Desenvolvedor | 🇧🇷</p>
+        <p id="footerText">© 2026 Thalis Henrick — Developer | 🇧🇷</p>
         <p><i class="fab fa-github"></i> /OThrip  |  <i class="fa fa-gamepad"></i> oThrip</p>
     </footer>
 </main>
 
-<div id="toastMessage" class="toast-msg">📬 Mensagem enviada com sucesso!</div>
+<div id="toastMessage" class="toast-msg">📬 Message sent successfully!</div>
 
 <script>
-    // Desabilitar zoom com Ctrl + e Ctrl -
+    // Translations
+    const translations = {
+        en: {
+            modalTitle: "Contact Me",
+            nameLabel: "Your Name",
+            namePlaceholder: "Enter your name",
+            emailLabel: "Your Email",
+            emailPlaceholder: "Enter your email",
+            messageLabel: "Message",
+            messagePlaceholder: "What would you like to say?",
+            submitBtn: "Send Message",
+            subhead: "Th Developer",
+            description: "low poly modeler & game developer on the Roblox platform.",
+            contactBtn: "Contact",
+            specialtiesTitle: "✨ My Specialties",
+            card1Title: "Game Development",
+            card1Desc: "Game developer on Roblox, building immersive and unique experiences",
+            card2Title: "3D Modeler",
+            card2Desc: "3D modeling for creating and managing detailed assets.",
+            attentionText: "Attention to detail is what makes your business succeed",
+            gamesTitle: "My Game & My Assets",
+            friendChatDesc: "This game was developed by me and a friend under the codename Mikashi. We created this game with the intention of providing a fun experience for people to interact with each other and chat",
+            friendChatBadge: "My Game",
+            modelsDesc: "Most of my 3D models are created for games and commercial use. Feel free to contact me through the 'Contact' button above",
+            modelsBadge: "My Assets",
+            footerText: "© 2026 Thalis Henrick — Developer | 🇧🇷",
+            loading: "Loading images...",
+            noImages: "⚠️ No images found in images/ folder",
+            toastSuccess: "✅ Message sent! I will get back to you soon.",
+            toastEmail: "📧 Opening your email client"
+        },
+        pt: {
+            modalTitle: "Fale Comigo",
+            nameLabel: "Seu Nome",
+            namePlaceholder: "Digite seu nome",
+            emailLabel: "Seu Email",
+            emailPlaceholder: "Digite seu email",
+            messageLabel: "Mensagem",
+            messagePlaceholder: "O que você gostaria de dizer?",
+            submitBtn: "Enviar Mensagem",
+            subhead: "Th Desenvolvedor",
+            description: "modelador low poly & desenvolvedor de jogos na plataforma Roblox.",
+            contactBtn: "Contato",
+            specialtiesTitle: "✨ Minhas Especialidades",
+            card1Title: "Desenvolvimento de Jogos",
+            card1Desc: "Desenvolvedor de jogos na Roblox, criando experiências imersivas e únicas",
+            card2Title: "Modelador 3D",
+            card2Desc: "Modelagem 3D para criação e gerenciamento de assets detalhados.",
+            attentionText: "Atenção aos detalhes é o que faz seu negócio prosperar",
+            gamesTitle: "Meu Jogo & Meus Assets",
+            friendChatDesc: "Este jogo foi desenvolvido por mim e um amigo sob o codinome Mikashi. Criamos este jogo com a intenção de proporcionar uma experiência divertida para as pessoas interagirem e conversarem",
+            friendChatBadge: "Meu Jogo",
+            modelsDesc: "A maioria dos meus modelos 3D são criados para jogos e uso comercial. Sinta-se à vontade para entrar em contato através do botão 'Contato' acima",
+            modelsBadge: "Meus Assets",
+            footerText: "© 2026 Thalis Henrick — Desenvolvedor | 🇧🇷",
+            loading: "Carregando imagens...",
+            noImages: "⚠️ Nenhuma imagem encontrada na pasta images/",
+            toastSuccess: "✅ Mensagem enviada! Em breve retornarei.",
+            toastEmail: "📧 Abrindo seu cliente de email"
+        },
+        es: {
+            modalTitle: "Contáctame",
+            nameLabel: "Tu Nombre",
+            namePlaceholder: "Ingresa tu nombre",
+            emailLabel: "Tu Email",
+            emailPlaceholder: "Ingresa tu email",
+            messageLabel: "Mensaje",
+            messagePlaceholder: "¿Qué te gustaría decir?",
+            submitBtn: "Enviar Mensaje",
+            subhead: "Th Desarrollador",
+            description: "modelador low poly & desarrollador de juegos en la plataforma Roblox.",
+            contactBtn: "Contacto",
+            specialtiesTitle: "✨ Mis Especialidades",
+            card1Title: "Desarrollo de Juegos",
+            card1Desc: "Desarrollador de juegos en Roblox, creando experiencias inmersivas y únicas",
+            card2Title: "Modelador 3D",
+            card2Desc: "Modelado 3D para crear y gestionar assets detallados.",
+            attentionText: "La atención al detalle es lo que hace que tu negocio tenga éxito",
+            gamesTitle: "Mi Juego & Mis Assets",
+            friendChatDesc: "Este juego fue desarrollado por mí y un amigo bajo el nombre clave Mikashi. Creamos este juego con la intención de proporcionar una experiencia divertida para que las personas interactúen y charlen",
+            friendChatBadge: "Mi Juego",
+            modelsDesc: "La mayoría de mis modelos 3D están creados para juegos y uso comercial. No dudes en contactarme a través del botón 'Contacto' de arriba",
+            modelsBadge: "Mis Assets",
+            footerText: "© 2026 Thalis Henrick — Desarrollador | 🇧🇷",
+            loading: "Cargando imágenes...",
+            noImages: "⚠️ No se encontraron imágenes en la carpeta images/",
+            toastSuccess: "✅ ¡Mensaje enviado! Pronto me pondré en contacto.",
+            toastEmail: "📧 Abriendo tu cliente de email"
+        }
+    };
+
+    let currentLang = 'en';
+
+    function setLanguage(lang) {
+        currentLang = lang;
+        const t = translations[lang];
+        
+        // Modal
+        document.getElementById('modalTitle').innerHTML = `<i class="fas fa-envelope"></i> ${t.modalTitle}`;
+        document.getElementById('nameLabel').innerHTML = `<i class="fas fa-user"></i> ${t.nameLabel}`;
+        document.getElementById('userName').placeholder = t.namePlaceholder;
+        document.getElementById('emailLabel').innerHTML = `<i class="fas fa-envelope"></i> ${t.emailLabel}`;
+        document.getElementById('userEmail').placeholder = t.emailPlaceholder;
+        document.getElementById('messageLabel').innerHTML = `<i class="fas fa-comment"></i> ${t.messageLabel}`;
+        document.getElementById('userMessage').placeholder = t.messagePlaceholder;
+        document.getElementById('submitBtn').innerHTML = `<i class="fas fa-paper-plane"></i> ${t.submitBtn}`;
+        
+        // Hero
+        document.getElementById('subhead').textContent = t.subhead;
+        document.getElementById('description').textContent = t.description;
+        document.getElementById('contactBtnText').textContent = t.contactBtn;
+        
+        // Benefits
+        document.getElementById('specialtiesTitle').textContent = t.specialtiesTitle;
+        document.getElementById('card1Title').textContent = t.card1Title;
+        document.getElementById('card1Desc').textContent = t.card1Desc;
+        document.getElementById('card2Title').textContent = t.card2Title;
+        document.getElementById('card2Desc').textContent = t.card2Desc;
+        document.getElementById('attentionText').textContent = t.attentionText;
+        
+        // Games
+        document.getElementById('gamesTitle').innerHTML = `<i class="fas fa-gamepad" style="margin-right: 12px;"></i> ${t.gamesTitle}`;
+        document.getElementById('friendChatDesc').textContent = t.friendChatDesc;
+        document.getElementById('friendChatBadge').textContent = t.friendChatBadge;
+        document.getElementById('modelsDesc').textContent = t.modelsDesc;
+        document.getElementById('modelsBadge').textContent = t.modelsBadge;
+        
+        // Footer
+        document.getElementById('footerText').textContent = t.footerText;
+        
+        // Update loading texts if still loading
+        if (document.getElementById('friendChatImages').innerHTML.includes('Loading images')) {
+            document.getElementById('loadingFriendChat').textContent = t.loading;
+        }
+        if (document.getElementById('modelsImages').innerHTML.includes('Loading images')) {
+            document.getElementById('loadingModels').textContent = t.loading;
+        }
+        
+        // Update active button
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            if (btn.getAttribute('data-lang') === lang) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
+
+    // Disable zoom
     document.addEventListener('keydown', function(e) {
         if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '0')) {
             e.preventDefault();
         }
     });
     
-    // Desabilitar gesto de pinça (zoom) em dispositivos móveis
     document.addEventListener('touchmove', function(e) {
         if (e.touches.length === 2) {
             e.preventDefault();
         }
     }, { passive: false });
     
-    // Configuração dos sliders
+    // Slider configuration
     const sliders = {
         friendChat: {
             images: [],
@@ -648,7 +840,6 @@
         }
     };
 
-    // Função para carregar imagens do Friend Chat (formato 1200x900)
     async function loadFriendChatImages() {
         const imageNames = ['friendchat1.png', 'friendchat2.png', 'friendchat3.png', 'friendchat4.png', 'friendchat5.png'];
         const basePath = 'images/';
@@ -668,15 +859,12 @@
                 if (loaded) {
                     loadedImages.push(imgUrl);
                 }
-            } catch(e) {
-                console.log(`Erro ao carregar ${imgName}`);
-            }
+            } catch(e) {}
         }
         
         return loadedImages;
     }
 
-    // Função para carregar imagens dos modelos 3D (model1.png até model4.png)
     async function loadModelsImages() {
         const imageNames = ['model1.png', 'model2.png', 'model3.png', 'model4.png'];
         const basePath = 'images/';
@@ -696,26 +884,21 @@
                 if (loaded) {
                     loadedImages.push(imgUrl);
                 }
-            } catch(e) {
-                console.log(`Erro ao carregar ${imgName}`);
-            }
+            } catch(e) {}
         }
         
-        // Se não encontrar nenhuma imagem, usar placeholders
         if (loadedImages.length === 0) {
-            const placeholders = [
+            return [
                 'https://picsum.photos/id/104/1200/900',
                 'https://picsum.photos/id/26/1200/900',
                 'https://picsum.photos/id/175/1200/900',
                 'https://picsum.photos/id/29/1200/900'
             ];
-            return placeholders;
         }
         
         return loadedImages;
     }
 
-    // Função para atualizar o slider
     function updateSlider(sliderName) {
         const slider = sliders[sliderName];
         const container = document.getElementById(slider.containerId);
@@ -723,22 +906,19 @@
         
         if (!container || slider.images.length === 0) return;
         
-        // Atualizar imagens
         container.innerHTML = '';
         slider.images.forEach((imgUrl, index) => {
             const img = document.createElement('img');
             img.src = imgUrl;
-            img.alt = `Imagem ${index + 1}`;
+            img.alt = `Image ${index + 1}`;
             img.style.width = '100%';
             img.style.height = '100%';
             img.style.objectFit = 'cover';
             container.appendChild(img);
         });
         
-        // Ajustar largura do container
         container.style.transform = `translateX(-${slider.currentIndex * 100}%)`;
         
-        // Atualizar dots
         dotsContainer.innerHTML = '';
         slider.images.forEach((_, index) => {
             const dot = document.createElement('span');
@@ -749,7 +929,6 @@
         });
     }
 
-    // Função para mudar de slide
     function changeSlide(sliderName, direction) {
         const slider = sliders[sliderName];
         if (slider.images.length === 0) return;
@@ -765,7 +944,6 @@
         const container = document.getElementById(slider.containerId);
         container.style.transform = `translateX(-${slider.currentIndex * 100}%)`;
         
-        // Atualizar dots ativos
         const dots = document.querySelectorAll(`#${slider.dotsId} .dot`);
         dots.forEach((dot, index) => {
             if (index === slider.currentIndex) {
@@ -776,7 +954,6 @@
         });
     }
 
-    // Função para ir para um slide específico
     function goToSlide(sliderName, index) {
         const slider = sliders[sliderName];
         if (slider.images.length === 0) return;
@@ -785,7 +962,6 @@
         const container = document.getElementById(slider.containerId);
         container.style.transform = `translateX(-${slider.currentIndex * 100}%)`;
         
-        // Atualizar dots ativos
         const dots = document.querySelectorAll(`#${slider.dotsId} .dot`);
         dots.forEach((dot, i) => {
             if (i === slider.currentIndex) {
@@ -796,7 +972,7 @@
         });
     }
 
-    // Modal e formulário
+    // Modal
     const modal = document.getElementById('contactModal');
     const contactBtn = document.getElementById('contactBtn');
     const closeModal = document.querySelector('.close-modal');
@@ -840,7 +1016,7 @@
             formData.append('name', name);
             formData.append('email', email);
             formData.append('message', message);
-            formData.append('_subject', `Contato de ${name} - Portfólio`);
+            formData.append('_subject', `Contact from ${name} - Portfolio`);
             
             try {
                 const response = await fetch('https://formsubmit.co/ajax/Henthaliss@gmail.com', {
@@ -849,33 +1025,40 @@
                 });
                 
                 if (response.ok) {
-                    showToast('✅ Mensagem enviada! Em breve retornarei.');
+                    showToast(translations[currentLang].toastSuccess);
                     contactForm.reset();
                     modal.style.display = 'none';
                 } else {
-                    throw new Error('Erro');
+                    throw new Error('Error');
                 }
             } catch (error) {
-                window.location.href = `mailto:Henthaliss@gmail.com?subject=Contato de ${name}&body=Nome: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMensagem:%0D%0A${message}`;
-                showToast('📧 Abrindo seu cliente de email');
+                window.location.href = `mailto:Henthaliss@gmail.com?subject=Contact from ${name}&body=Name: ${name}%0D%0AEmail: ${email}%0D%0A%0D%0AMessage:%0D%0A${message}`;
+                showToast(translations[currentLang].toastEmail);
                 contactForm.reset();
                 modal.style.display = 'none';
             }
         });
     }
     
-    // Inicializar os sliders
+    // Language selector
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            setLanguage(btn.getAttribute('data-lang'));
+        });
+    });
+    
+    // Initialize
     window.addEventListener('DOMContentLoaded', async () => {
-        // Carregar imagens do Friend Chat
+        setLanguage('en');
+        
         const friendChatImages = await loadFriendChatImages();
         sliders.friendChat.images = friendChatImages;
         if (friendChatImages.length > 0) {
             updateSlider('friendChat');
         } else {
-            document.getElementById('friendChatImages').innerHTML = '<div class="loading">⚠️ Nenhuma imagem encontrada na pasta images/</div>';
+            document.getElementById('friendChatImages').innerHTML = `<div class="loading">${translations.en.noImages}</div>`;
         }
         
-        // Carregar imagens dos Modelos 3D
         const modelsImages = await loadModelsImages();
         sliders.models.images = modelsImages;
         updateSlider('models');
