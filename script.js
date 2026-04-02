@@ -196,7 +196,7 @@ async function loadVisits() {
     const universeId = 'COLOCA_AQUI'; // ⚠️ vou te ajudar nisso abaixo
 
     try {
-        const res = await fetch(`https://games.roblox.com/v1/games?universeIds=${universeId}`);
+        const res = await fetch(`https://games.roblox.com/v1/games?universeIds=${111993454779967}`);
         const data = await res.json();
 
         const visits = data.data[0].visits;
